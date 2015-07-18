@@ -3,7 +3,11 @@ package com.example.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +21,8 @@ import android.widget.Toast;
 
 public class ListViewActivity extends Activity{
 	
-	//String list[] = new String[]{"Hello", "this", "is", "Android", "Class"};
-	
 	List<Students> listStudent = new ArrayList<Students>();
+	HTTPConnection http;
 
 	
 	@Override
@@ -27,22 +30,61 @@ public class ListViewActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list);
 		
-		listStudent.add(new Students("name", "email", "phone", "address", "image"));
-		listStudent.add(new Students("name1", "email1", "phone1", "address1", "image1"));
-		listStudent.add(new Students("name2", "email2", "phone2", "address2", "image2"));
-		listStudent.add(new Students("name3", "email3", "phone3", "address3", "image3"));
-		listStudent.add(new Students("name4", "email4", "phone4", "address4", "image4"));
-		listStudent.add(new Students("name5", "email5", "phone5", "address5", "image5"));
-		listStudent.add(new Students("name6", "email6", "phone6", "address6", "image6"));
-		listStudent.add(new Students("name", "email", "phone", "address", "image"));
-		listStudent.add(new Students("name1", "email1", "phone1", "address1", "image1"));
-		listStudent.add(new Students("name2", "email2", "phone2", "address2", "image2"));
-		listStudent.add(new Students("name3", "email3", "phone3", "address3", "image3"));
-		listStudent.add(new Students("name4", "email4", "phone4", "address4", "image4"));
-		listStudent.add(new Students("name5", "email5", "phone5", "address5", "image5"));
-		listStudent.add(new Students("name6", "email6", "phone6", "address6", "image6"));
+		http = new HTTPConnection(getApplicationContext());
 		
+		if(http.isNetworkConnected()){
+			task.execute();
+		}
+		else{
+			Toast.makeText(getApplicationContext(), "No internet connection"
+					, Toast.LENGTH_LONG).show();
+		}
+	}
+	
+	AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>(){
 
+		@Override
+		protected String doInBackground(Void... arg0) {
+			String data = http.getHTTPData("http://pi.hemshrestha.com.np/test/contacto.php?action=list");
+			return data;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+			populateList(result);
+			displayList();
+		}
+		
+	};
+
+
+	protected void populateList(String result) {
+		try{
+			JSONObject jObj = new JSONObject(result);
+			String res = jObj.getString("res");
+			if(!res.equals("success")){
+				Toast.makeText(getApplicationContext(), "JSON Error", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			
+			JSONArray data = jObj.getJSONArray("data");
+			for (int i = 0; i < data.length(); i++) {
+				JSONObject student = data.getJSONObject(i);
+				String name = student.getString("c_fname");
+				Students st = new Students(name, student.getString("n_home")
+						, student.getString("n_mobile"), student.getString("n_office"), "");
+				
+				listStudent.add(st);
+				
+			}
+			
+			
+		}catch(Exception e){}
+	}
+
+
+	protected void displayList() {
 		ArrayAdapter<Students> adapter = new ArrayAdapter<Students>(this,
 				R.layout.list_item, android.R.id.text1, listStudent){
 
@@ -88,6 +130,5 @@ public class ListViewActivity extends Activity{
 				
 			}
 		});
-		
 	}
 }

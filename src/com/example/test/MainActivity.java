@@ -50,8 +50,12 @@ public class MainActivity extends Activity {
 //				
 //				startActivity(intent);
 				
-				
-				task.execute();
+				if(http.isNetworkConnected()){
+					task.execute();
+				}
+				else{
+					showToast("No internet connection");
+				}
 				
 			}
 		});
