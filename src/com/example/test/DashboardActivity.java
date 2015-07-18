@@ -25,7 +25,13 @@ public class DashboardActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		switch(v.getId()){
+		case R.id.ll_list:
 		Intent i = new Intent(getApplicationContext(), ListViewActivity.class);
 		startActivity(i);
+		case R.id.ll_add:
+		Intent in = new Intent(getApplicationContext(), MainActivity.class);
+		startActivity(in);
+		}
 	}
 }
