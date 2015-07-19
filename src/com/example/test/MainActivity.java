@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -66,14 +63,12 @@ public class MainActivity extends Activity {
 		@Override
 		protected String doInBackground(Void... arg0) {
 			ArrayList<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
-			
 			params.add(new BasicNameValuePair("action", "add"));
 			params.add(new BasicNameValuePair("c_fname", name));
 			params.add(new BasicNameValuePair("n_home", email));
 			params.add(new BasicNameValuePair("n_mobile", phone));
 			
-			String data = http.getHTTPData("http://pi.hemshrestha.com.np/test/contacto.php"
-					, params);
+			String data = http.getHTTPData("http://pi.hemshrestha.com.np/test/contacto.php", params);
 			return data;
 		}
 
@@ -83,15 +78,10 @@ public class MainActivity extends Activity {
 			showToast("Result = " + result);
 		}
 		
-		
 	};
 	
 	private void showToast(String name) {
 		Toast.makeText(getApplicationContext(), name, Toast.LENGTH_SHORT).show();
 	}
-	
-	
-	
-	
-	
+	//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 }
